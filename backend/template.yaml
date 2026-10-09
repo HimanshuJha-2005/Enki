@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Enki - Citizen Flood Map for India (Day 2 scaffold)
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 256
+
+Resources:
+  ReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: enki-reports
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: reportId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: reportId
+          KeyType: HASH
+
+  PhotosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub enki-photos-${AWS::AccountId}
+
+  PostReportFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: enki-post-report
+      Handler: src/postReport.handler
+      CodeUri: ./
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ReportsTable
+        - S3WritePolicy:
+            BucketName: !Ref PhotosBucket
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref ReportsTable
+          BUCKET_NAME: !Ref PhotosBucket
+      Events:
+        PostReport:
+          Type: HttpApi
+          Properties:
+            Path: /reports
+            Method: POST
+
+  GetReportsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: enki-get-reports
+      Handler: src/getReports.handler
+      CodeUri: ./
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ReportsTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref ReportsTable
+      Events:
+        GetReports:
+          Type: HttpApi
+          Properties:
+            Path: /reports
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: HTTP API URL
+    Value: !Sub https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com
+  TableName:
+    Value: !Ref ReportsTable
+  BucketName:
+    Value: !Ref PhotosBucket

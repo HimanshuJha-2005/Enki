@@ -1,0 +1,12 @@
+{
+  "name": "enki-backend",
+  "version": "0.1.0",
+  "description": "Enki - Citizen Flood Map for India",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0"
+  }
+}
