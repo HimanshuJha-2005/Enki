@@ -67,6 +67,25 @@ Resources:
             Path: /reports
             Method: GET
 
+  GetUploadUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: enki-get-upload-url
+      Handler: src/getUploadUrl.handler
+      CodeUri: ./
+      Policies:
+        - S3WritePolicy:
+            BucketName: !Ref PhotosBucket
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref PhotosBucket
+      Events:
+        GetUploadUrl:
+          Type: HttpApi
+          Properties:
+            Path: /reports/upload-url
+            Method: GET
+
 Outputs:
   ApiUrl:
     Description: HTTP API URL
