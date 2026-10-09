@@ -14,5 +14,3 @@ Stack plan:
 - Backend: Node.js Lambda + API Gateway (SAM), DynamoDB, S3
 - AI: Strands Agents SDK for spam / water verification
 - Alerts: SNS (stretch)
-
-Status: Day 1 - problem + scaffold. Building in public, small commits.
