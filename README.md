@@ -4,6 +4,11 @@ Live hyperlocal flood / waterlogging / leak / dry-tap map. Citizens report with 
 
 Track: **Heat and Water** — Environmental Hacks, Bharat Builds Tour (Oct 8–11, 2026)
 
+## Live
+- API: `https://4arvfdutg3.execute-api.ap-south-1.amazonaws.com`
+- Frontend: connect repo on Amplify Hosting, root `frontend/`
+- Demo data: 15 seeded reports + photo upload verified live Oct 10
+
 ## Problem
 Monsoon floods the gali, not the district. IMD gives district alerts, municipal helplines are city-specific. No open, citizen-level view of which street is waterlogged right now.
 
