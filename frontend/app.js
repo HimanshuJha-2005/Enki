@@ -29,12 +29,18 @@
       const res = await fetch(`${API_URL}/reports?${q.toString()}`);
       const data = await res.json();
       layer.clearLayers();
+      const colors = { flood: '#f43f5e', waterlogging: '#f59e0b', leak: '#22d3ee', 'dry-tap': '#a78bfa' };
       (data.reports || []).forEach((r) => {
-        L.circleMarker([r.lat, r.lng], { radius: 4 + (r.severity || 3) })
-          .bindPopup(`<b>${r.type}</b> sev ${r.severity}<br/>${r.pincode}<br/>${r.createdAt || ''}`)
+        L.circleMarker([r.lat, r.lng], { radius: 4 + (r.severity || 3), color: colors[r.type] || '#fff', fillColor: colors[r.type] || '#fff', fillOpacity: 0.8, weight: 2 })
+          .bindPopup(`<b>${r.type}</b> — sev ${r.severity}/5<br/>${r.pincode} · ${String(r.createdAt || '').slice(0, 10)}${r.photoKey ? '<br/>photo attached' : ''}`)
           .addTo(layer);
       });
-      status(`Loaded ${(data.reports || []).length} reports`);
+      const total = (data.reports || []).length;
+      const el = document.getElementById('s-total');
+      if (el) el.textContent = `${total} reports live`;
+      const t = document.getElementById('s-today');
+      if (t) t.textContent = total ? 'updated just now' : 'be the first reporter';
+      status(`Loaded ${total} reports — click a dot for details`);
     } catch (e) {
       status('API not reachable yet. Start SAM local.');
     }
