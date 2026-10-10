@@ -2,10 +2,10 @@
   const API_URL = (window.ENKI_CONFIG && window.ENKI_CONFIG.API_URL) || '';
   const status = (m) => { document.getElementById('status').textContent = m; };
 
-  const map = L.map('map').setView([22.5, 79.5], 5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 18,
+  const map = L.map('map', { zoomControl: true }).setView([22.5, 79.5], 5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 19,
   }).addTo(map);
 
   let marker = null;
