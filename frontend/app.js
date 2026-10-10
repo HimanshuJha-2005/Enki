@@ -3,8 +3,8 @@
   const status = (m) => { document.getElementById('status').textContent = m; };
 
   const map = L.map('map', { zoomControl: true }).setView([22.5, 79.5], 5);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO',
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors, HOT',
     maxZoom: 19,
   }).addTo(map);
 
