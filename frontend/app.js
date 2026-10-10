@@ -51,10 +51,21 @@
       const pincode = document.getElementById('r-pincode').value.trim();
       const type = document.getElementById('r-type').value;
       const severity = parseInt(document.getElementById('r-severity').value, 10);
+      const photoFile = document.getElementById('r-photo').files[0];
+      let photoKey = null;
+      if (photoFile) {
+        status('Uploading photo...');
+        const u = await fetch(`${API_URL}/reports/upload-url?contentType=${encodeURIComponent(photoFile.type)}`);
+        const udata = await u.json();
+        if (!u.ok) throw new Error(udata.error || 'Upload URL failed');
+        const put = await fetch(udata.uploadUrl, { method: 'PUT', headers: { 'Content-Type': photoFile.type }, body: photoFile });
+        if (!put.ok) throw new Error('Photo upload failed');
+        photoKey = udata.photoKey;
+      }
       const res = await fetch(`${API_URL}/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lng, pincode, type, severity }),
+        body: JSON.stringify({ lat, lng, pincode, type, severity, photoKey }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Submit failed');
