@@ -5,26 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Enki — Citizen Flood Map for India</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" />
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f3f4f6; color: #111827; }
-    header { padding: 10px 16px; background: #1e3a5f; color: #fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
-    header h1 { margin:0; font-size:18px; font-weight:700; }
-    header p { margin:2px 0 0; font-size:12px; color:#dbe4f0; }
-    #stats { display:flex; gap:8px; font-size:12px; color:#dbe4f0; }
-    #layout { display:grid; grid-template-columns: 2.2fr 1fr; height: calc(100vh - 60px); }
-    #map { min-height:420px; background:#e5e7eb; }
-    #panel { padding:12px; overflow-y:auto; background:#f3f4f6; border-left:1px solid #d1d5db; }
-    .card { background:#fff; border:1px solid #d1d5db; border-radius:6px; padding:10px 12px; margin-bottom:10px; }
-    .card h2 { font-size:13px; margin:0 0 6px; color:#1e3a5f; }
-    input, select { width:100%; padding:8px; margin:4px 0; border-radius:4px; border:1px solid #9ca3af; background:#fff; color:#111827; font-size:13px; }
-    button { width:100%; padding:9px; margin:5px 0; border-radius:4px; border:1px solid #1e3a5f; cursor:pointer; font-weight:700; font-size:13px; }
-    #f-apply { background:#fff; color:#1e3a5f; }
-    #r-submit { background:#1e3a5f; color:#fff; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #fff; color: #0f172a; }
+    header { padding: 12px 20px; background: #fff; color: #0f172a; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    header h1 { margin:0; font-size:19px; font-weight:800; }
+    header h1 i { font-style:normal; background:#0ea5e9; color:#fff; font-size:11px; padding:2px 8px; border-radius:20px; vertical-align:middle; margin-left:8px; }
+    header p { margin:2px 0 0; font-size:12.5px; color:#64748b; }
+    #stats { display:flex; gap:8px; font-size:12.5px; color:#0f172a; font-weight:600; }
+    #layout { display:grid; grid-template-columns: 2.2fr 380px; height: calc(100vh - 62px); }
+    #map { min-height:420px; background:#f1f5f9; }
+    #panel { padding:14px; overflow-y:auto; background:#f8fafc; border-left:1px solid #e2e8f0; }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; margin-bottom:12px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+    .card h2 { font-size:12px; margin:0 0 8px; color:#0284c7; text-transform:uppercase; letter-spacing:.5px; }
+    input, select { width:100%; padding:9px 10px; margin:5px 0; border-radius:8px; border:1px solid #cbd5e1; background:#fff; color:#0f172a; font-size:13.5px; }
+    button { width:100%; padding:10px; margin:6px 0; border-radius:8px; border:0; cursor:pointer; font-weight:700; font-size:13.5px; }
+    #f-apply { background:#e0f2fe; color:#0369a1; }
+    #r-submit { background:#0284c7; color:#fff; }
     button:disabled { opacity:.6; }
-    .hint { font-size:12px; color:#4b5563; min-height:16px; }
-    #legend { display:flex; gap:6px; flex-wrap:wrap; font-size:12px; margin-top:6px; color:#374151; }
-    #legend span { padding:2px 8px; border:1px solid #d1d5db; border-radius:4px; background:#f9fafb; }
+    .hint { font-size:12px; color:#64748b; min-height:16px; }
+    #legend { display:flex; gap:6px; flex-wrap:wrap; font-size:12px; margin-top:8px; color:#475569; }
+    #legend span { padding:3px 9px; border:1px solid #e2e8f0; border-radius:20px; background:#f8fafc; }
     .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
     @media (max-width: 850px) { #layout { grid-template-columns:1fr; } #map { height:55vh; } }
   </style>
