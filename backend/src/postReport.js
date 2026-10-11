@@ -29,7 +29,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { lat, lng, pincode, type, severity, photoKey } = body;
+  const { lat, lng, pincode, type, severity, photoKey, photoUrl } = body;
 
   if (typeof lat !== 'number' || typeof lng !== 'number') {
     return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'lat/lng must be numbers' }) };
@@ -52,6 +52,7 @@ exports.handler = async (event) => {
     type,
     severity: Math.min(5, Math.max(1, Number(severity) || 3)),
     photoKey: typeof photoKey === 'string' ? photoKey.slice(0, 256) : null,
+    photoUrl: typeof photoUrl === 'string' && (photoUrl.startsWith('photos/') || photoUrl.startsWith('http')) ? photoUrl.slice(0, 512) : null,
     status: 'open',
     createdAt: new Date().toISOString(),
   };
