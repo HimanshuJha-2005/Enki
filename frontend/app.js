@@ -79,6 +79,37 @@
   const modal = document.getElementById('pic-modal');
   const grid = document.getElementById('pic-grid');
   const picname = document.getElementById('r-picname');
+  const verdictEl = document.getElementById('r-verdict');
+  const SEV_WORD = { 2: 'ankle', 3: 'knee', 4: 'waist', 5: 'dangerous' };
+
+  async function analyzeB64(b64) {
+    verdictEl.textContent = 'Rekognition analyzing photo...';
+    try {
+      const res = await fetch(`${API_URL}/reports/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: b64 }),
+      });
+      const v = await res.json();
+      if (!res.ok) throw new Error(v.error || 'analyze failed');
+      document.getElementById('r-type').value = v.type;
+      document.getElementById('r-severity').value = String(v.severity);
+      verdictEl.textContent = `AI guess: ${v.type} · ${SEV_WORD[v.severity] || 'knee'}-deep · ${(v.confidence * 100).toFixed(0)}% — ${v.reason}`;
+    } catch (e) {
+      verdictEl.textContent = 'AI unavailable: ' + e.message;
+    }
+  }
+
+  async function analyzeBlob(blob) {
+    const b64 = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result).split(',')[1]);
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+    if (b64 && b64.length <= 4_500_000) analyzeB64(b64);
+    else verdictEl.textContent = 'photo too large for AI analyze (max ~3MB)';
+  }
 
   const distKm = (a, b) => {
     const R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLng = (b.lng - a.lng) * Math.PI / 180;
@@ -92,11 +123,12 @@
       const el = document.createElement('div');
       el.className = 'pic-item';
       el.innerHTML = `<img src="${d.p}" alt="${d.city} ${d.type}" loading="lazy"><div class="cap"><b>${d.city}</b>${d.type} · ${d.cap}</div>`;
-      el.addEventListener('click', () => {
+      el.addEventListener('click', async () => {
         selectedDemo = d;
         document.getElementById('r-photo').value = '';
         picname.textContent = `using demo pic: ${d.city} · ${d.type}`;
         modal.classList.remove('open');
+        analyzeBlob(await (await fetch(d.p)).blob());
       });
       grid.appendChild(el);
     });
@@ -118,9 +150,11 @@
   document.getElementById('pic-close').addEventListener('click', () => modal.classList.remove('open'));
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
   document.getElementById('r-photo').addEventListener('change', () => {
-    if (document.getElementById('r-photo').files[0]) {
+    const f = document.getElementById('r-photo').files[0];
+    if (f) {
       selectedDemo = null;
-      picname.textContent = `using file: ${document.getElementById('r-photo').files[0].name}`;
+      picname.textContent = `using file: ${f.name}`;
+      analyzeBlob(f);
     }
   });
 
@@ -161,6 +195,7 @@
       selectedDemo = null;
       document.getElementById('r-photo').value = '';
       picname.textContent = 'no photo selected (optional)';
+      verdictEl.textContent = '';
       load();
     } catch (e) {
       status(e.message);
