@@ -30,6 +30,21 @@
     #legend span { padding:3px 9px; border:1px solid #e2e8f0; border-radius:20px; background:#f8fafc; }
     .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
     .pop-img { width:220px; max-height:150px; object-fit:cover; border-radius:8px; margin-top:8px; display:block; border:1px solid #e2e8f0; }
+    .photo-row { display:flex; gap:6px; align-items:center; margin-top:4px; }
+    .photo-row #r-demopics { width:auto; flex:0 0 auto; padding:8px 12px; background:#e0f2fe; color:#0369a1; margin:0; }
+    .photo-row #r-photo { flex:1; margin:0; font-size:12px; padding:7px 8px; }
+    #pic-modal { position:fixed; inset:0; background:rgba(15,23,42,.55); display:none; z-index:1000; align-items:center; justify-content:center; }
+    #pic-modal.open { display:flex; }
+    #pic-box { background:#fff; border-radius:14px; width:min(760px, 92vw); max-height:86vh; overflow:auto; padding:16px; }
+    #pic-box .m-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    #pic-box .m-head h3 { margin:0; font-size:15px; color:#0f172a; }
+    #pic-close { width:auto; padding:4px 12px; background:#f1f5f9; color:#0f172a; border:1px solid #e2e8f0; margin:0; font-size:14px; }
+    #pic-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
+    .pic-item { border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; cursor:pointer; background:#fff; }
+    .pic-item:hover { border-color:#0284c7; box-shadow:0 2px 8px rgba(2,132,199,.2); }
+    .pic-item img { width:100%; height:100px; object-fit:cover; display:block; }
+    .pic-item .cap { padding:6px 8px; font-size:12px; color:#334155; }
+    .pic-item .cap b { display:block; color:#0f172a; font-size:12.5px; }
     @media (max-width: 850px) { #layout { grid-template-columns:1fr; } #map { height:55vh; } }
   </style>
 </head>
@@ -46,7 +61,7 @@
     <div id="panel">
       <div class="card">
         <h2>What is this?</h2>
-        <div style="font-size:13px;color:var(--muted)">IMD warns districts. Enki shows streets. Citizens upload flood / waterlogging / leak / dry-tap photos with GPS + pincode. Bigger dot = deeper water. Click any dot for details.</div>
+        <div style="font-size:13px;color:#64748b">IMD warns districts. Enki shows streets. Citizens upload flood / waterlogging / leak / dry-tap photos with GPS + pincode. Bigger dot = deeper water. Click any dot for details.</div>
         <div id="legend">
           <span><i class="dot" style="background:#f43f5e"></i>flood</span>
           <span><i class="dot" style="background:#f59e0b"></i>waterlogging</span>
@@ -83,10 +98,23 @@
           <option value="4">waist — blocked</option>
           <option value="5">dangerous — rescue</option>
         </select>
-        <input id="r-photo" type="file" accept="image/jpeg,image/png,image/webp" />
+        <div class="photo-row">
+          <button type="button" id="r-demopics">Demo pics</button>
+          <input id="r-photo" type="file" accept="image/jpeg,image/png,image/webp" />
+        </div>
+        <p class="hint" id="r-picname">no photo selected (optional)</p>
         <button id="r-submit">3. Submit — warns your pincode</button>
         <p class="hint" id="status"></p>
       </div>
+    </div>
+  </div>
+  <div id="pic-modal">
+    <div id="pic-box">
+      <div class="m-head">
+        <h3>Demo pics — tap one to use in your report</h3>
+        <button id="pic-close" type="button">✕</button>
+      </div>
+      <div id="pic-grid"></div>
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
