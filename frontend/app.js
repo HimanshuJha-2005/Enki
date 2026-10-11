@@ -31,9 +31,21 @@
       layer.clearLayers();
       const colors = { flood: '#f43f5e', waterlogging: '#f59e0b', leak: '#22d3ee', 'dry-tap': '#a78bfa' };
       (data.reports || []).forEach((r) => {
-        L.circleMarker([r.lat, r.lng], { radius: 4 + (r.severity || 3), color: colors[r.type] || '#fff', fillColor: colors[r.type] || '#fff', fillOpacity: 0.8, weight: 2 })
-          .bindPopup(`<b>${r.type}</b> — sev ${r.severity}/5<br/>${r.pincode} · ${String(r.createdAt || '').slice(0, 10)}${r.photoKey ? '<br/>photo attached' : ''}`)
-          .addTo(layer);
+        let html = `<b>${r.type}</b> — sev ${r.severity}/5<br/>${r.pincode} · ${String(r.createdAt || '').slice(0, 10)}`;
+        if (r.photoUrl) html += `<img class="pop-img" src="${r.photoUrl}" alt="report photo" loading="lazy">`;
+        else if (r.photoKey) html += `<img class="pop-img" data-key="${r.photoKey}" alt="report photo">`;
+        const m = L.circleMarker([r.lat, r.lng], { radius: 4 + (r.severity || 3), color: colors[r.type] || '#fff', fillColor: colors[r.type] || '#fff', fillOpacity: 0.8, weight: 2 });
+        m.bindPopup(html);
+        m.on('popupopen', (ev) => {
+          const img = ev.popup.getElement().querySelector('img[data-key]');
+          if (img && !img.src) {
+            fetch(`${API_URL}/reports/photo?key=${encodeURIComponent(img.dataset.key)}`)
+              .then((x) => x.json())
+              .then((d) => { if (d.url) img.src = d.url; })
+              .catch(() => {});
+          }
+        });
+        m.addTo(layer);
       });
       const total = (data.reports || []).length;
       const el = document.getElementById('s-total');
