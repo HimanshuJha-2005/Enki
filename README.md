@@ -6,7 +6,7 @@ Track: **Heat and Water** — Environmental Hacks, Bharat Builds Tour (Oct 8–1
 
 ## Live
 - API: `https://4arvfdutg3.execute-api.ap-south-1.amazonaws.com`
-- Frontend: connect repo on Amplify Hosting, root `frontend/`
+- Frontend: `https://master.d3l7ycbklg93jo.amplifyapp.com`
 - Demo data: 15 seeded reports + photo upload verified live Oct 10
 
 ## Problem
@@ -46,4 +46,7 @@ cd backend && npm install && sam local start-api --region ap-south-1
 - Uses AWS open-source: Strands Agents SDK, SAM CLI
 
 ## Seed
-15 reports across Delhi, Mumbai, Patna, Guwahati, Kolkata, Chennai, Bengaluru, Hyderabad, Ahmedabad, Jaipur, Chandigarh, Agra, Pune — `infra/seed.json`.
+15 reports across Delhi, Mumbai, Patna, Guwahati, Kolkata, Chennai, Bengaluru, Hyderabad, Ahmedabad, Jaipur, Chandigarh, Agra, Pune — `infra/seed.json`. Each pin opens with a photo.
+
+## Photo credits
+Demo photos: Wikimedia Commons — real India flood/water/pipe photography (CC-licensed), stored in `frontend/photos/`. Citizen uploads go to S3 and are served via signed URLs.
