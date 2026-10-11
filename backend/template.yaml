@@ -25,6 +25,13 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub enki-photos-${AWS::AccountId}
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [PUT, GET, HEAD]
+            AllowedOrigins: ['*']
+            ExposedHeaders: [ETag, x-amz-request-id]
+            MaxAge: 3600
 
   PostReportFunction:
     Type: AWS::Serverless::Function
@@ -85,6 +92,26 @@ Resources:
           Properties:
             Path: /reports/upload-url
             Method: GET
+
+  AnalyzeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: enki-analyze-photo
+      Handler: src/analyzePhoto.handler
+      CodeUri: ./
+      Timeout: 15
+      MemorySize: 256
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: rekognition:DetectLabels
+              Resource: '*'
+      Events:
+        Analyze:
+          Type: HttpApi
+          Properties:
+            Path: /reports/analyze
+            Method: POST
 
   GetPhotoFunction:
     Type: AWS::Serverless::Function
