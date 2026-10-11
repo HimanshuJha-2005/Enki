@@ -58,6 +58,49 @@
     }
   }
 
+  const DEMO_PICS = [
+    { p: 'photos/flood-1.jpg', city: 'Mumbai', type: 'flood', cap: 'Car swept off road' },
+    { p: 'photos/flood-2.jpg', city: 'Mumbai', type: 'flood', cap: 'Bus in floodwater' },
+    { p: 'photos/flood-3.jpg', city: 'Mumbai', type: 'waterlogging', cap: 'Tree down, road flooded' },
+    { p: 'photos/flood-4.jpg', city: 'Assam', type: 'flood', cap: 'Village under water' },
+    { p: 'photos/flood-5.jpg', city: 'Assam', type: 'flood', cap: 'Fields submerged' },
+    { p: 'photos/flood-6.jpg', city: 'Godavari', type: 'flood', cap: 'River in spate' },
+    { p: 'photos/waterlogging-1.jpg', city: 'Chennai', type: 'waterlogging', cap: 'Office road waterlogged' },
+    { p: 'photos/waterlogging-2.jpg', city: 'Chennai', type: 'waterlogging', cap: 'City from the air' },
+    { p: 'photos/waterlogging-3.jpg', city: 'Chennai', type: 'waterlogging', cap: 'Relief on flooded street' },
+    { p: 'photos/leak-1.jpg', city: 'Pipeline', type: 'leak', cap: 'Broken water main' },
+    { p: 'photos/leak-2.jpg', city: 'Home', type: 'leak', cap: 'Tap leaking' },
+    { p: 'photos/leak-3.jpg', city: 'Tap', type: 'leak', cap: 'Dripping tap' },
+    { p: 'photos/drytap-1.jpg', city: 'Kerala', type: 'dry-tap', cap: 'Drought water queue' },
+    { p: 'photos/drytap-2.jpg', city: 'Village', type: 'dry-tap', cap: 'Hand pump running dry' },
+    { p: 'photos/drytap-3.jpg', city: 'Raichur', type: 'dry-tap', cap: 'Overhead tank empty' },
+  ];
+  let selectedDemo = null;
+  const modal = document.getElementById('pic-modal');
+  const grid = document.getElementById('pic-grid');
+  const picname = document.getElementById('r-picname');
+  DEMO_PICS.forEach((d) => {
+    const el = document.createElement('div');
+    el.className = 'pic-item';
+    el.innerHTML = `<img src="${d.p}" alt="${d.city} ${d.type}" loading="lazy"><div class="cap"><b>${d.city}</b>${d.type} · ${d.cap}</div>`;
+    el.addEventListener('click', () => {
+      selectedDemo = d;
+      document.getElementById('r-photo').value = '';
+      picname.textContent = `using demo pic: ${d.city} · ${d.type}`;
+      modal.classList.remove('open');
+    });
+    grid.appendChild(el);
+  });
+  document.getElementById('r-demopics').addEventListener('click', () => modal.classList.add('open'));
+  document.getElementById('pic-close').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+  document.getElementById('r-photo').addEventListener('change', () => {
+    if (document.getElementById('r-photo').files[0]) {
+      selectedDemo = null;
+      picname.textContent = `using file: ${document.getElementById('r-photo').files[0].name}`;
+    }
+  });
+
   document.getElementById('f-apply').addEventListener('click', load);
   document.getElementById('r-submit').addEventListener('click', async () => {
     const btn = document.getElementById('r-submit');
@@ -69,7 +112,11 @@
       const pincode = document.getElementById('r-pincode').value.trim();
       const type = document.getElementById('r-type').value;
       const severity = parseInt(document.getElementById('r-severity').value, 10);
-      const photoFile = document.getElementById('r-photo').files[0];
+      let photoFile = document.getElementById('r-photo').files[0];
+      if (!photoFile && selectedDemo) {
+        const blob = await (await fetch(selectedDemo.p)).blob();
+        photoFile = new File([blob], `${selectedDemo.city}-${selectedDemo.type}.jpg`, { type: blob.type || 'image/jpeg' });
+      }
       let photoKey = null;
       if (photoFile) {
         status('Uploading photo...');
@@ -88,6 +135,9 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Submit failed');
       status(`Reported ${data.reportId}`);
+      selectedDemo = null;
+      document.getElementById('r-photo').value = '';
+      picname.textContent = 'no photo selected (optional)';
       load();
     } catch (e) {
       status(e.message);
